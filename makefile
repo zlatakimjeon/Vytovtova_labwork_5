@@ -14,34 +14,24 @@ src/recurrence.o: src/recurrence.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 lib/librecurrence.a: $(OBJ)
-ifeq ($(OS),Windows_NT)
-	if not exist lib mkdir lib
-else
 	mkdir -p lib
-endif
 	$(AR) $(ARFLAGS) lib/librecurrence.a $(OBJ)
 
 test/run: test/test.c lib/librecurrence.a
-ifeq ($(OS),Windows_NT)
-	if not exist test mkdir test
-	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test\run.exe
-else
 	mkdir -p test
+ifeq ($(OS),Windows_NT)
+	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test/run.exe
+else
 	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test/run
 endif
 
 test:
 ifeq ($(OS),Windows_NT)
-	test\run.exe
+	test/run.exe
 else
 	./test/run
 endif
 
+# Очистка
 clean:
-ifeq ($(OS),Windows_NT)
-	if exist lib rmdir /s /q lib
-	if exist src\recurrence.o del src\recurrence.o
-	if exist test\run.exe del test\run.exe
-else
-	rm -rf lib src/*.o test/run
-endif
+	rm -rf lib src/*.o test/run*
