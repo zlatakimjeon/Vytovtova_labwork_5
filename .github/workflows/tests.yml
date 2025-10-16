@@ -7,17 +7,34 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-and-test-linux:
+    name: Build and Test on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install GCC
-      run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install GCC
+        run: sudo apt-get update && sudo apt-get install -y build-essential
 
-    - name: Build
-      run: make all
+      - name: Build and Test
+        run: make test
 
-    - name: Run Tests
-      run: make test
+  build-and-test-windows:
+    name: Build and Test on Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install GCC (MinGW)
+        run: |
+          choco install mingw -y
+          refreshenv
+
+      - name: Add GCC to PATH
+        run: setx PATH "%PATH%;C:\tools\mingw64\bin"
+
+      - name: Build and Test
+        shell: pwsh
+        run: make test
