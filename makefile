@@ -10,6 +10,9 @@ OBJ = $(SRC:.c=.o)
 
 all: lib/librecurrence.a test/run
 
+src/recurrence.o: src/recurrence.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 lib/librecurrence.a: $(OBJ)
 ifeq ($(OS),Windows_NT)
 	if not exist lib mkdir lib
@@ -18,16 +21,14 @@ else
 endif
 	$(AR) $(ARFLAGS) lib/librecurrence.a $(OBJ)
 
-src/recurrence.o: src/recurrence.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
 test/run: test/test.c lib/librecurrence.a
 ifeq ($(OS),Windows_NT)
 	if not exist test mkdir test
+	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test\run.exe
 else
 	mkdir -p test
-endif
 	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test/run
+endif
 
 test:
 ifeq ($(OS),Windows_NT)
