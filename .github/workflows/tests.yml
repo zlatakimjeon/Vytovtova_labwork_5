@@ -1,4 +1,4 @@
-name: C Build and Test
+name: Build and Test C Project
 
 on:
   push:
@@ -7,34 +7,18 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test-linux:
-    name: Build and Test on Ubuntu
+  build-linux:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
+      - run: sudo apt update && sudo apt install -y build-essential
+      - run: make clean all
+      - run: make test
 
-      - name: Install GCC
-        run: sudo apt-get update && sudo apt-get install -y build-essential
-
-      - name: Build and Test
-        run: make test
-
-  build-and-test-windows:
-    name: Build and Test on Windows
+  build-windows:
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install GCC (MinGW)
-        run: |
-          choco install mingw -y
-          refreshenv
-
-      - name: Add GCC to PATH
-        run: setx PATH "%PATH%;C:\tools\mingw64\bin"
-
-      - name: Build and Test
-        shell: pwsh
-        run: make test
+      - run: choco install mingw -y
+      - run: make clean all
+      - run: test\run.exe

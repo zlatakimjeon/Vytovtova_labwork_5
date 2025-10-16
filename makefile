@@ -11,25 +11,18 @@ OBJ = $(SRC:.c=.o)
 all: lib/librecurrence.a test/run
 
 lib/librecurrence.a: $(OBJ)
-ifeq ($(OS),Windows_NT)
-	if not exist lib mkdir lib
-else
-	mkdir -p lib
-endif
+	$(call MAKE_DIR,lib)
 	$(AR) $(ARFLAGS) lib/librecurrence.a $(OBJ)
 
 src/recurrence.o: src/recurrence.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Сборка тестового раннера
 test/run: test/test.c lib/librecurrence.a
-ifeq ($(OS),Windows_NT)
-	if not exist test mkdir test
-else
-	mkdir -p test
-endif
+	$(call MAKE_DIR,test)
 	$(CC) $(CFLAGS) test/test.c -Llib -lrecurrence -lm -o test/run
 
-test: clean test/run
+test:
 ifeq ($(OS),Windows_NT)
 	test\run.exe
 else
@@ -44,3 +37,11 @@ ifeq ($(OS),Windows_NT)
 else
 	rm -rf lib src/*.o test/run
 endif
+
+define MAKE_DIR
+ifeq ($(OS),Windows_NT)
+	if not exist $(1) mkdir $(1)
+else
+	mkdir -p $(1)
+endif
+endef
